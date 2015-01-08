@@ -9,9 +9,12 @@
  */
 angular.module('d3App')
   .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+
+    $scope.data = [{"name": "hello wolrd", "score": 10},
+                    {"name": "world", "score": 15},
+      {'name' : 'third item','score' : 3}];
+
+    $scope.d3OnClick = function (item) {
+      console.log('Item is ' + item.name);
+    };
   });
