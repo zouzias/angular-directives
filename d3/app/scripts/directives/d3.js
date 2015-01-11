@@ -1,5 +1,8 @@
 'use strict';
 
+
+// The bar chart directive is based on 
+// http://www.ng-newsletter.com/posts/d3-on-angular.html
 angular.module('d3App').directive('d3Bar', function ($window, $timeout) {
   return {
     restrict: 'EA',
