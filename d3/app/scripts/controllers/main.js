@@ -14,6 +14,16 @@ angular.module('d3App')
                     {"name": "world", "score": 15},
       {'name' : 'third item','score' : 3}];
 
+
+    $scope.scatter =  [ {'text': 'a', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'b', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'c', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'd', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'e', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'f', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'a', 'x': Math.random(), 'y' : Math.random()},
+    {'text': 'b', 'x': Math.random(), 'y' : Math.random()}, ];
+
     $scope.d3OnClick = function (item) {
       console.log('Item is ' + item.name);
     };
