@@ -110,6 +110,12 @@ angular.module('d3App').directive('scatter', function ($window, $timeout) {
         barHeight = parseInt(attrs.barHeight) || 20,
         barPadding = parseInt(attrs.barPadding) || 5;
 
+
+      // add the tooltip area to the webpage
+var tooltip = d3.select('body').append('div')
+    .attr('class', 'tooltip')
+    .style('opacity', 0);  
+
       var svg = d3.select(ele[0])
         .append('svg');
 
@@ -170,10 +176,10 @@ angular.module('d3App').directive('scatter', function ($window, $timeout) {
         var cValue = function(d) { return d.text;},
             color = d3.scale.category10();
 
-        svg.attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        svg.attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+  .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
           // don't want dots overlapping axis, so add in buffer to data domain
           xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
@@ -212,7 +218,20 @@ angular.module('d3App').directive('scatter', function ($window, $timeout) {
               .attr('r', 3.5)
               .attr('cx', xMap)
               .attr('cy', yMap)
-              .style('fill', function(d) { return color(cValue(d));});
+              .style('fill', function(d) { return color(cValue(d));})
+              .on('mouseover', function(d) {
+          tooltip.transition()
+               .duration(200)
+               .style('opacity', 0.9);
+          tooltip.html(d.text + '<br/> (' + xValue(d) + ', ' + yValue(d) + ')')
+               .style('left', (d3.event.pageX + 5) + 'px')
+               .style('top', (d3.event.pageY - 28) + 'px');
+      })
+      .on('mouseout', function(d) {
+          tooltip.transition()
+               .duration(500)
+               .style('opacity', 0);
+      });
 
         
           // draw legend
