@@ -1,8 +1,7 @@
-
 'use strict';
 
 
-// The bar chart directive is based on 
+// The bar chart directive is based on
 // http://www.ng-newsletter.com/posts/d3-on-angular.html
 angular.module('d3App').directive('d3Bar', function ($window, $timeout) {
     return {
@@ -155,14 +154,14 @@ angular.module('d3App').directive('scatter', function ($window, $timeout) {
 
                 renderTimeout = $timeout(function () {
 
-                    /* 
+                    /*
                      * value accessor - returns the value to encode for a given data object.
                      * scale - maps value to a visual display encoding, such as a pixel position.
                      * map function - maps from data value to display value
                      * axis - sets up axis
                      */
 
-                    // setup x 
+                    // setup x
                     var xValue = function (d) {
                         return d.x;
                     }, // data -> value
@@ -406,21 +405,20 @@ restrict: 'EA',
         scope.draw = function(words){
                     var fill = d3.scale.category20();
 
-                    svg.selectAll("text")
+                    svg.selectAll('text')
                         .data(words)
-                        .enter().append("text")
-                        .style("font-size", function(d) { return d.size + "px"; })
-                        .style("font-family", "Impact")
-                        .style("fill", function(d, i) { return fill(i); })
-                        .attr("text-anchor", "middle")
-                        .attr("transform", function(d) {
-                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                        .enter().append('text')
+                        .style('font-size', function(d) { return d.size + 'px'; })
+                        .style('font-family', 'Impact')
+                        .style('fill', function(d, i) { return fill(i); })
+                        .attr('text-anchor', 'middle')
+                        .attr('transform', function(d) {
+                        return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
                                 })
                         .text(function(d) { return d.text; });
                 };
+          var renderTimeout;
 
-
-        var renderTimeout;
                 //var margin = parseInt(attrs.margin) || 20,
                 var barHeight = parseInt(attrs.barHeight) || 20,
                 barPadding = parseInt(attrs.barPadding) || 5;
@@ -433,8 +431,6 @@ restrict: 'EA',
                 .attr('height', height)
                 .append('g')
                 .attr('transform', 'translate('+ width / 2 + ',' + height / 2 + ')');
-
-
 
                 $window.onresize = function () {
                     scope.$apply();
@@ -453,33 +449,122 @@ restrict: 'EA',
 
                 scope.render = function (data) {
 
-                console.log('Rendering word-cloud...');
-                        svg.selectAll('*').remove();
-                        if (!data) {
-                return;
-                }
+                  console.log('Rendering word-cloud...');
+                  svg.selectAll('*').remove();
 
-                // Data
-                if (renderTimeout) {
-                clearTimeout(renderTimeout);
-                }
+                  if (!data) {
+                    return;
+                  }
 
-                renderTimeout = $timeout(function () {
+                  if (renderTimeout) {
+                    clearTimeout(renderTimeout);
+                  }
 
-                    console.log('width ' + width);
-
-                d3.layout.cloud().size([width, height])
-                .words(scope.data.map(function(d) {
-                return {text: d, size: 10 + Math.random() * 90};
-                        }))
-                .padding(5)
-                .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                .font("Impact")
-                .fontSize(function(d) { return d.size; })
-                .on("end", scope.draw)
-                .start();
-                }, 200);
-                
+                  renderTimeout = $timeout(function () {
+                    d3.layout.cloud().size([width, height])
+                      .words(scope.data.map(function(d) {
+                        return {text: d, size: 10 + Math.random() * 90};
+                      }))
+                      .padding(5)
+                      .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                      .font('Impact')
+                      .fontSize(function(d) { return d.size; })
+                      .on('end', scope.draw)
+                      .start();
+                  }, 200);
                 };//render
         }};
+});
+
+
+
+angular.module('d3App').directive('pieBar', function ($window, $timeout) {
+  return {
+    restrict: 'EA',
+    scope: {
+      data: '=',
+      label: '@',
+      onClick: '&'
+    },
+    link: function (scope, ele, attrs) {
+
+
+
+
+      var renderTimeout;
+
+      var width = 960,
+        height = 500,
+        radius = Math.min(width, height) / 2;
+
+      var color = d3.scale.ordinal()
+        .range(['#98abc5', '#8a89a6', '#7b6888', '#6b486b', '#a05d56', '#d0743c', '#ff8c00']);
+
+      var arc = d3.svg.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(0);
+
+      var pie = d3.layout.pie()
+        .sort(null)
+        .value(function(d) { return d.value; });
+
+      var svg = d3.select(ele[0]).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+      $window.onresize = function () {
+        scope.$apply();
+      };
+
+      scope.$watch(function () {
+        return angular.element($window)[0].innerWidth;
+      }, function () {
+        scope.render(scope.data);
+      });
+
+      scope.$watch('data', function (newData) {
+        scope.render(newData);
+      }, true);
+
+
+      scope.render = function (data) {
+
+        console.log('Rendering word-cloud...');
+        svg.selectAll('*').remove();
+        if (!data) {
+          return;
+        }
+
+        // Data
+        if (renderTimeout) {
+          clearTimeout(renderTimeout);
+        }
+
+        renderTimeout = $timeout(function () {
+
+            // Aggregate value
+            data.forEach(function(d) {
+              d.value = + d.value;
+            });
+
+            var g = svg.selectAll('.arc')
+              .data(pie(data))
+              .enter().append('g')
+              .attr('class', 'arc');
+
+            g.append('path')
+              .attr('d', arc)
+              .style('fill', function(d) { return color(d.data.label); });
+
+            g.append('text')
+              .attr('transform', function(d) { return 'translate(' + arc.centroid(d) + ')'; })
+              .attr('dy', '.35em')
+              .style('text-anchor', 'middle')
+              .text(function(d) { return d.data.label; });
+          }, 200);
+
+      };//render
+    }};
 });
