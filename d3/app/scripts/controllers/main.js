@@ -43,7 +43,10 @@ angular.module('d3App')
       }
     }
 
+    $scope.words = ["Hello", "world", "normally", "you", "want", "more", "words", "than", "this", "IBM", "Greece"];
     };
+
+
    
 
     $scope.d3OnClick = function (item) {
