@@ -27,6 +27,16 @@ angular.module('d3App')
     {'text': 'USA', 'x': myRand(), 'y' : myRand()},
     {'text': 'Croatia', 'x': myRand(), 'y' : myRand()}, ];
 
+
+    $scope.heatmap = [];
+
+    for ( var i = 1; i <= 7; i++){
+      for ( var j = 1 ; j <= 24; j++){
+        var o = { 'day' : i , 'hour': j, 'value' :  Math.floor(Math.random() * 11)};
+        $scope.heatmap.push(o);
+      }
+    }
+
     $scope.d3OnClick = function (item) {
       console.log('Item is ' + item.name);
     };
