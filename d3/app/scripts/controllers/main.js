@@ -53,8 +53,24 @@ angular.module('d3App')
         {'label': '25-44', 'value' : 14106543},
         {'label': '45-64', 'value' : 8819342},
         {'label': '>65'  , 'value' : 1612463}];
-    };
+    
 
+    $scope.groupbar = [];
+
+    $scope.groupNames = ['CA', 'TX', 'NY', 'FL', 'IL', 'PA'];
+
+    for ( var i = 0; i < $scope.groupNames.length; i++){
+        var o = [{'name': 'Under 5 Years',    'value': randInteger(100)},
+                 {'name': '5 to 13 Years',    'value': randInteger(100)},
+                 {'name': '14 to 17 Years',   'value': randInteger(100)},
+                 {'name': '18 to 24 Years',   'value': randInteger(100)}, 
+                 {'name': '25 to 44 Years',   'value': randInteger(100)},
+                 {'name': '45 to 64 Years',   'value': randInteger(100)}, 
+                 {'name': '65 Years and Over','value': randInteger(100)}];
+        $scope.groupbar.push({'groupName': $scope.groupNames[i], 'groupValues': o});
+    }
+
+};
 
 
 
