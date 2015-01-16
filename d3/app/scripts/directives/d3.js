@@ -322,6 +322,11 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
       }, true);
       scope.render = function (data) {
 
+        // add the tooltip area to the webpage
+        var tooltip = d3.select('body').append('div')
+          .attr('class', 'tooltip')
+          .style('opacity', 0);
+
         console.log('Rendering heatmap...');
         svg.selectAll('*').remove();
         if (!data) {
@@ -340,6 +345,7 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
               return d.value;
             })])
             .range(colors);
+
           var dayLabels = svg.selectAll('.dayLabel')
             .data(days)
             .enter().append('text')
@@ -355,6 +361,7 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
             .attr('class', function (d, i) {
               return ((i >= 0 && i <= 4) ? 'dayLabel mono axis axis-workweek' : 'dayLabel mono axis');
             });
+
           var timeLabels = svg.selectAll('.timeLabel')
             .data(times)
             .enter().append('text')
@@ -370,6 +377,7 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
             .attr('class', function (d, i) {
               return ((i >= 7 && i <= 16) ? 'timeLabel mono axis axis-worktime' : 'timeLabel mono axis');
             });
+
           var heatMap = svg.selectAll('.hour')
             .data(data)
             .enter().append('rect')
@@ -384,7 +392,21 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
             .attr('class', 'hour bordered')
             .attr('width', gridSize)
             .attr('height', gridSize)
-            .style('fill', colors[0]);
+            .style('fill', colors[0])
+            .on('mouseover', function (d) {
+            tooltip.transition()
+              .duration(200)
+              .style('opacity', 0.9);
+            tooltip.html('Value: ' + d.value + '<br/> ' + days[d.day - 1] + ', ' + times[d.hour - 1] + 'm')
+              .style('left', (d3.event.pageX + 5) + 'px')
+              .style('top', (d3.event.pageY - 28) + 'px');
+          })
+            .on('mouseout', function (d) {
+              tooltip.transition()
+                .duration(500)
+                .style('opacity', 0);
+            });
+
           heatMap.transition().duration(1000)
             .style('fill', function (d) {
               return colorScale(d.value);
