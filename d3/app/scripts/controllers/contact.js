@@ -9,5 +9,5 @@
  */
 angular.module('d3App')
   .controller('ContactCtrl', function ($scope) {
-  	$scope.hello = 'world';
+    $scope.hello = 'world';
   });
