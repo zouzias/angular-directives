@@ -3,7 +3,7 @@
 
 // The bar chart directive is based on
 // http://www.ng-newsletter.com/posts/d3-on-angular.html
-angular.module('d3App').directive('d3Bar', function ($window, $timeout) {
+angular.module('d3Components').directive('d3Bar', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -97,7 +97,7 @@ angular.module('d3App').directive('d3Bar', function ($window, $timeout) {
 });
 
 
-angular.module('d3App').directive('scatter', function ($window, $timeout) {
+angular.module('d3Components').directive('scatter', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -281,7 +281,7 @@ angular.module('d3App').directive('scatter', function ($window, $timeout) {
 });
 
 
-angular.module('d3App').directive('heatmap', function ($window, $timeout) {
+angular.module('d3Components').directive('heatmap', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -394,13 +394,13 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
             .attr('height', gridSize)
             .style('fill', colors[0])
             .on('mouseover', function (d) {
-            tooltip.transition()
-              .duration(200)
-              .style('opacity', 0.9);
-            tooltip.html('Value: ' + d.value + '<br/> ' + days[d.day - 1] + ', ' + times[d.hour - 1] + 'm')
-              .style('left', (d3.event.pageX + 5) + 'px')
-              .style('top', (d3.event.pageY - 28) + 'px');
-          })
+              tooltip.transition()
+                .duration(200)
+                .style('opacity', 0.9);
+              tooltip.html('Value: ' + d.value + '<br/> ' + days[d.day - 1] + ', ' + times[d.hour - 1] + 'm')
+                .style('left', (d3.event.pageX + 5) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px');
+            })
             .on('mouseout', function (d) {
               tooltip.transition()
                 .duration(500)
@@ -448,7 +448,7 @@ angular.module('d3App').directive('heatmap', function ($window, $timeout) {
 });
 
 
-angular.module('d3App').directive('wordCloud', function ($window, $timeout) {
+angular.module('d3Components').directive('wordCloud', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -544,7 +544,7 @@ angular.module('d3App').directive('wordCloud', function ($window, $timeout) {
 });
 
 
-angular.module('d3App').directive('pieBar', function ($window, $timeout) {
+angular.module('d3Components').directive('pieBar', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -641,7 +641,7 @@ angular.module('d3App').directive('pieBar', function ($window, $timeout) {
 });
 
 
-angular.module('d3App').directive('groupBar', function ($window, $timeout) {
+angular.module('d3Components').directive('groupBar', function ($window, $timeout) {
   return {
     restrict: 'EA',
     scope: {
@@ -793,6 +793,162 @@ angular.module('d3App').directive('groupBar', function ($window, $timeout) {
 
         }, 200);
 
+      };//render
+    }
+  };
+});
+
+
+angular.module('d3Components').directive('timeSeries', function ($window, $timeout) {
+  return {
+    restrict: 'EA',
+    scope: {
+      data: '=',
+      label: '@',
+      onClick: '&'
+    },
+    link: function (scope, ele, attrs) {
+
+      $window.onresize = function () {
+        scope.$apply();
+      };
+
+      scope.$watch(function () {
+        return angular.element($window)[0].innerWidth;
+      }, function () {
+        scope.render(scope.data);
+      });
+
+      scope.$watch('data', function (newData) {
+        scope.render(newData);
+      }, true);
+
+      var renderTimeout;
+
+      var margin = {top: 20, right: 80, bottom: 30, left: 50},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+
+      var x = d3.time.scale()
+        .range([0, width]);
+
+      var y = d3.scale.linear()
+        .range([height, 0]);
+
+      var color = d3.scale.category10();
+
+      var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient('bottom');
+
+      var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient('left');
+
+      var line = d3.svg.line()
+        .interpolate('basis')
+        .x(function (d) {
+          return x(d.date);
+        })
+        .y(function (d) {
+          return y(d.temperature);
+        });
+
+      var svg = d3.select(ele[0]).append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+      scope.render = function (data) {
+
+        svg.selectAll('*').remove();
+        if (!data) {
+          return;
+        }
+
+        if (renderTimeout) {
+          clearTimeout(renderTimeout);
+        }
+
+        renderTimeout = $timeout(function () {
+
+          console.log('Rendering time-series...');
+
+          color.domain(d3.keys(data[0]).filter(function (key) {
+            return key !== 'date';
+          }));
+
+          var cities = color.domain().map(function (name) {
+            return {
+              name: name,
+              values: data.map(function (d) {
+                return {date: d.date, temperature: +d[name]};
+              })
+            };
+          });
+
+          x.domain(d3.extent(data, function (d) {
+            return d.date;
+          }));
+
+          y.domain([
+            d3.min(cities, function (c) {
+              return d3.min(c.values, function (v) {
+                return v.temperature;
+              });
+            }),
+            d3.max(cities, function (c) {
+              return d3.max(c.values, function (v) {
+                return v.temperature;
+              });
+            })
+          ]);
+
+          svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(xAxis);
+
+          svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis)
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 6)
+            .attr('dy', '.71em')
+            .style('text-anchor', 'end')
+            .text('Stock values (USD)');
+
+          var city = svg.selectAll('.city')
+            .data(cities)
+            .enter().append('g')
+            .attr('class', 'city');
+
+          city.append('path')
+            .attr('class', 'line')
+            .attr('d', function (d) {
+              return line(d.values);
+            })
+            .style('stroke', function (d) {
+              return color(d.name);
+            });
+
+          city.append('text')
+            .datum(function (d) {
+              return {name: d.name, value: d.values[d.values.length - 1]};
+            })
+            .attr('transform', function (d) {
+              return 'translate(' + x(d.value.date) + ',' + y(d.value.temperature) + ')';
+            })
+            .attr('x', 3)
+            .attr('dy', '.35em')
+            .text(function (d) {
+              return d.name;
+            });
+
+        }, 200);
       };//render
     }
   };

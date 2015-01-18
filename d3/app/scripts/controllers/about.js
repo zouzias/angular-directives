@@ -7,7 +7,7 @@
  * # AboutCtrl
  * Controller of the d3App
  */
-angular.module('d3App')
+angular.module('d3Components')
   .controller('AboutCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',

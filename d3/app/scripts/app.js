@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 angular
-  .module('d3App', [
+  .module('d3Components', [
     'ngAnimate',
     'ngCookies',
     'ngResource',

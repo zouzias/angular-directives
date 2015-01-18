@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the d3App
  */
-angular.module('d3App')
+angular.module('d3Components')
   .controller('MainCtrl', function ($scope) {
 
     var myRand = function () {
@@ -54,7 +54,6 @@ angular.module('d3App')
         {'label': '45-64', 'value': 8819342},
         {'label': '>65', 'value': 1612463}];
 
-
       $scope.groupbar = [];
 
       $scope.groupNames = ['CA', 'TX', 'NY', 'FL', 'IL', 'PA'];
@@ -70,8 +69,20 @@ angular.module('d3App')
         $scope.groupbar.push({'groupName': $scope.groupNames[i], 'groupValues': o});
       }
 
-    };
 
+      $scope.timeSeries = [];
+      var year = 2012;
+      for (var month = 1; month < 12; month++) {
+        for (var day = 1; day < 30; day++) {
+          $scope.timeSeries.push({
+            'date': new Date(year, month, day),
+            'stock A': month + randInteger(10),
+            'stock B': (2 * month) + randInteger(5),
+            'stock C': (3 * month) + randInteger(1)
+          });
+        }
+      }
+    };
 
     $scope.d3OnClick = function (item) {
       console.log('Item is ' + item.name);
