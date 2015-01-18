@@ -921,12 +921,12 @@ angular.module('d3Components').directive('timeSeries', function ($window, $timeo
             .style('text-anchor', 'end')
             .text('Stock values (USD)');
 
-          var city = svg.selectAll('.city')
+          var stock = svg.selectAll('.stock')
             .data(cities)
             .enter().append('g')
-            .attr('class', 'city');
+            .attr('class', 'stock');
 
-          city.append('path')
+          stock.append('path')
             .attr('class', 'line')
             .attr('d', function (d) {
               return line(d.values);
@@ -935,7 +935,7 @@ angular.module('d3Components').directive('timeSeries', function ($window, $timeo
               return color(d.name);
             });
 
-          city.append('text')
+          stock.append('text')
             .datum(function (d) {
               return {name: d.name, value: d.values[d.values.length - 1]};
             })
