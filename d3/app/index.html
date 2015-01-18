@@ -13,11 +13,11 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/scatter.css">
-    <link rel="stylesheet" href="styles/heatmap.css">
-    <link rel="stylesheet" href="styles/pieBar.css">
-    <link rel="stylesheet" href="styles/group-bar.css">
-    <link rel="stylesheet" href="styles/timeSeries.css">
+    <link rel="stylesheet" href="scripts/directives/scatterPlot/scatter.css">
+    <link rel="stylesheet" href="scripts/directives/heatmap/heatmap.css">
+    <link rel="stylesheet" href="scripts/directives/pieBar/pieBar.css">
+    <link rel="stylesheet" href="scripts/directives/groupBar/group-bar.css">
+    <link rel="stylesheet" href="scripts/directives/time-series/timeSeries.css">
     <!-- endbuild -->
   </head>
   <body ng-app="d3Components">
@@ -81,6 +81,12 @@
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/directives/d3.js"></script>
+        <script src="scripts/directives/heatmap/heatmap.js"></script>
+        <script src="scripts/directives/pieBar/pieBar.js"></script>
+        <script src="scripts/directives/scatterPlot/scatter.js"></script>
+        <script src="scripts/directives/wordCloud/wordCloud.js"></script>
+        <script src="scripts/directives/groupBar/groupBar.js"></script>
+        <script src="scripts/directives/time-series/time-series.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/about.js"></script>
         <script src="scripts/controllers/contact.js"></script>
