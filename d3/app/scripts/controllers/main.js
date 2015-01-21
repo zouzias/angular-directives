@@ -82,6 +82,16 @@ angular.module('d3Components')
           });
         }
       }
+
+      $scope.boxPlot = [];
+      for (var j = 1; j <= 100; j++) {
+        $scope.boxPlot.push({
+          'Q1': randInteger(100),
+          'Q2': randInteger(100),
+          'Q3': randInteger(100),
+          'Q4': randInteger(100)
+        });
+      }
     };
 
     $scope.d3OnClick = function (item) {
