@@ -87,9 +87,9 @@ angular.module('d3Components')
       for (var j = 1; j <= 100; j++) {
         $scope.boxPlot.push({
           'Q1': randInteger(100),
-          'Q2': randInteger(100),
-          'Q3': randInteger(100),
-          'Q4': randInteger(100)
+          'Q2': 2 * randInteger(100),
+          'Q3': 3 * randInteger(100),
+          'Q4': 4 * randInteger(100)
         });
       }
     };
