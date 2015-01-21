@@ -18,6 +18,9 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
       var min = Infinity,
         max = -Infinity;
 
+      var xAxisLabel  = "X-axis label here";
+      var yAxisLabel  = "Y-axis label here";
+      var titleLegend = "My title here";
 
       var svg = d3.select(ele[0]).append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -86,7 +89,7 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
           data[3] = [];
           // add more rows if your csv file has more columns
 
-          // add here the header of the csv file
+          // Labels of the box plots
           data[0][0] = "Q1";
           data[1][0] = "Q2";
           data[2][0] = "Q3";
@@ -108,10 +111,8 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
             var rowMax = Math.max(v1, Math.max(v2, Math.max(v3, v4)));
             var rowMin = Math.min(v1, Math.min(v2, Math.min(v3, v4)));
 
-            data[0][1].push(v1);
-            data[1][1].push(v2);
-            data[2][1].push(v3);
-            data[3][1].push(v4);
+            data[0][1].push(v1);           data[1][1].push(v2);
+            data[2][1].push(v3);           data[3][1].push(v4);
             // add more rows if your csv file has more columns
 
             if (rowMax > max) max = rowMax;
@@ -154,7 +155,6 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
             })
             .call(chart.width(x.rangeBand()));
 
-
           // add a title
           svg.append("text")
             .attr("x", (width / 2))
@@ -162,7 +162,7 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
             .attr("text-anchor", "middle")
             .style("font-size", "18px")
             //.style("text-decoration", "underline")
-            .text("Revenue 2012");
+            .text(titleLegend);
 
           // draw y axis
           svg.append("g")
@@ -174,7 +174,7 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .style("font-size", "16px")
-            .text("Revenue in €");
+            .text(yAxisLabel);
 
           // draw x axis
           svg.append("g")
@@ -187,7 +187,7 @@ angular.module('d3Components').directive('boxPlot', function ($window, $timeout)
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .style("font-size", "16px")
-            .text("Quarter");
+            .text(xAxisLabel);
 
         }, 200);
       };//render
