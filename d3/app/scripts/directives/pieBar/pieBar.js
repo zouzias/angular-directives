@@ -10,8 +10,9 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
     link: function (scope, ele, attrs) {
       var renderTimeout;
 
-      var width = 960,
-        height = 500,
+      var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom,
         radius = Math.min(width, height) / 2;
 
       var color = d3.scale.ordinal()
@@ -50,7 +51,7 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
 
       scope.render = function (data) {
 
-        console.log('Rendering word-cloud...');
+        console.log('Rendering pie-bar...');
         svg.selectAll('*').remove();
         if (!data) {
           return;
@@ -79,15 +80,34 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
               return color(d.data.label);
             });
 
-          g.append('text')
-            .attr('transform', function (d) {
-              return 'translate(' + arc.centroid(d) + ')';
-            })
-            .attr('dy', '.35em')
-            .style('text-anchor', 'middle')
-            .text(function (d) {
-              return d.data.label;
+
+          var legend = svg.selectAll('.legend')
+            .data(data)
+            .enter().append('g')
+            .attr('class', 'legend')
+            .attr('transform', function (d, i) {
+              return 'translate(0,' + i * 20 + ')';
             });
+
+          legend.append('rect')
+            .attr('x', width / 2.3 - 18)
+            .attr('width', 18)
+            .attr('height', 18)
+            .style('fill', function (d) {
+              return color(d.label);
+            });
+
+
+          legend.append('text')
+            .attr('x', width / 2.3 - 24)
+            .attr('y', 9)
+            .attr('dy', '.35em')
+            .style('text-anchor', 'end')
+            .text(function (d) {
+              return d.label;
+            });
+
+         
         }, 200);
 
       };//render
