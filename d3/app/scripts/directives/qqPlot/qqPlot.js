@@ -150,8 +150,6 @@ angular.module('d3Components').directive('qqPlot', function ($window, $timeout) 
             .enter().append("g")
             .attr("class", "qq")
             .attr("transform", function (d, i) {
-              console.log(i);
-              console.dir(d);
               return "translate(" + ((width + margin.right + margin.left) * (i - 1) )+ ")";
             });
 

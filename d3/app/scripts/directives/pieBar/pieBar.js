@@ -69,7 +69,7 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
             d.value = +d.value;
           });
 
-          var g = svg.selectAll('.arc')
+          var g = svg.selectAll('.pie-arc')
             .data(pie(data))
             .enter().append('g')
             .attr('class', 'arc');
@@ -107,7 +107,7 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
               return d.label;
             });
 
-         
+
         }, 200);
 
       };//render

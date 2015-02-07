@@ -1,3 +1,10 @@
+/**
+ *  Histogram
+ *
+ *  Input data object: { 'max' : max_value, 'min' : min_value,
+ *  'buckets': [{'x' : left side value, 'interval', 'count': num_of_points},...]}
+ *
+*/
 angular.module('d3Components').directive('histogram', function ($window, $timeout) {
   return {
     restrict: 'EA',
@@ -49,11 +56,11 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
         }
 
         renderTimeout = $timeout(function () {
+
           // Formatters for counts and times (converting numbers to Dates).
           var formatCount = d3.format(",.0f");
 
-          var xRange = [0, d3.max(data, function(d){ return Number(d.value) + 0.2;})];
-          //var xRange = [0, d3.max(data, function(d){ return Number(d);})];
+          var xRange = [data.min, data.max];
 
           var x = d3.scale.linear()
             .domain(xRange)
@@ -62,53 +69,34 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
           var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
-          
-          var buckets = x.ticks(20);
-          var interval = (xRange[1] - xRange[0]) / buckets.length;
 
-          console.log('Range: '   + xRange[0] + " - " + xRange[1] );
-          console.log('Buckets: ' + buckets.length);
-          console.log('Interval: '+ interval);
-          console.log(buckets);
-          var histData = [];
-          for ( var i = 0 ; i < buckets.length ; i++){
-            histData.push({'x' : buckets[i] , 'dx': interval , 'y' : 0});
-          }
 
-          for ( var i = 0 ; i < data.length; i++){
-            var bucketIndex = Math.floor((Number(data[i].value) - xRange[0]) / interval);
-
-            // Avoid overflow
-            if ( bucketIndex === buckets.length){
-              bucketIndex--;
-            }
-
-            histData[bucketIndex].y = histData[bucketIndex].y + data[i].count;
-          }
+          console.log('Range: '   + data.min + " - " + data.max);
+          console.log('Buckets: ' + data.buckets.length);
 
           var y = d3.scale.linear()
-            .domain([0, d3.max(histData, function(d) { return d.y; })])
+            .domain([0, d3.max(data.buckets, function(d) { return d.count; })])
             .range([height, 0]);
 
           var bar = svg.selectAll(".histogram-bar")
-            .data(histData)
+            .data(data.buckets)
             .enter().append("g")
             .attr("class", "histogram-bar")
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.count) + ")"; });
 
           bar.append("rect")
             .attr("x", 1)
-            .attr("width", x(histData[0].dx) - 1)
-            .attr("height", function(d) { return height - y(d.y); });
+            .attr("width", function(d){return x(d.interval) -1;})
+            .attr("height", function(d) { return height - y(d.count); });
 
           bar.append("text")
             .attr("dy", ".75em")
             .attr("y", 6)
-            .attr("x", x(histData[0].dx) / 2)
+            .attr("x", function(d){return x(d.interval) / 2;})
             .attr("text-anchor", "middle")
             .text(function(d) {
-              var value = formatCount(d.y);
-              if ( value === 0){
+              var value = formatCount(d.count);
+              if ( value == 0){
                 return "";
               }
               else{

@@ -1,7 +1,7 @@
-.arc path {
+.pie-arc path {
   stroke: #fff;
 }
 
-.arc:hover{
+.pie-arc:hover{
 	    opacity: 0.6;
 }
