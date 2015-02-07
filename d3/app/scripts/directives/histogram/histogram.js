@@ -14,11 +14,11 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
         height = 500 - margin.top - margin.bottom;
 
 
-      var svg = d3.select(ele[0]).append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+      var svg = d3.select(ele[0]).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       $window.onresize = function () {
         scope.$apply();
@@ -37,7 +37,7 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
 
       scope.render = function (data) {
 
-        console.log('Rendering grouped-bar...');
+        console.log('Rendering histogram...');
         svg.selectAll('*').remove();
         if (!data) {
           return;
@@ -50,27 +50,45 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
 
         renderTimeout = $timeout(function () {
           // Formatters for counts and times (converting numbers to Dates).
-          var formatCount = d3.format(",.0f"),
-            formatTime = d3.time.format("%H:%M"),
-            formatMinutes = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); };
+          var formatCount = d3.format(",.0f");
+
+          var xRange = [0, d3.max(data, function(d){ return Number(d.value) + 0.2;})];
+          //var xRange = [0, d3.max(data, function(d){ return Number(d);})];
 
           var x = d3.scale.linear()
-            .domain([0, 120])
+            .domain(xRange)
             .range([0, width]);
 
-          // Generate a histogram using twenty uniformly-spaced bins.
-          histData =  d3.layout.histogram()
-            .bins(x.ticks(20))
-          (data);
+          var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+          
+          var buckets = x.ticks(20);
+          var interval = (xRange[1] - xRange[0]) / buckets.length;
+
+          console.log('Range: '   + xRange[0] + " - " + xRange[1] );
+          console.log('Buckets: ' + buckets.length);
+          console.log('Interval: '+ interval);
+          console.log(buckets);
+          var histData = [];
+          for ( var i = 0 ; i < buckets.length ; i++){
+            histData.push({'x' : buckets[i] , 'dx': interval , 'y' : 0});
+          }
+
+          for ( var i = 0 ; i < data.length; i++){
+            var bucketIndex = Math.floor((Number(data[i].value) - xRange[0]) / interval);
+
+            // Avoid overflow
+            if ( bucketIndex === buckets.length){
+              bucketIndex--;
+            }
+
+            histData[bucketIndex].y = histData[bucketIndex].y + data[i].count;
+          }
 
           var y = d3.scale.linear()
             .domain([0, d3.max(histData, function(d) { return d.y; })])
             .range([height, 0]);
-
-          var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(formatMinutes);
 
           var bar = svg.selectAll(".histogram-bar")
             .data(histData)
@@ -88,12 +106,21 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
             .attr("y", 6)
             .attr("x", x(histData[0].dx) / 2)
             .attr("text-anchor", "middle")
-            .text(function(d) { return formatCount(d.y); });
+            .text(function(d) {
+              var value = formatCount(d.y);
+              if ( value === 0){
+                return "";
+              }
+              else{
+                return value;
+              }
+            });
 
           svg.append("g")
             .attr("class", "x histogram-axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
+
 
         }, 200);
       };//render
