@@ -7,6 +7,7 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
       label: '@',
       onClick: '&'
     },
+    templateUrl: 'scripts/directives/pieBar/pieBar.html',
     link: function (scope, ele, attrs) {
       var renderTimeout;
 
@@ -28,7 +29,16 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
           return d.value;
         });
 
-      var svg = d3.select(ele[0]).append('svg')
+      // Format numbers with 'comma'
+      var formatCount = d3.format(",.0f");
+
+      // Tooltip
+      // add the tooltip area to the webpage
+      var tooltip = d3.select('body').append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
+
+      var svg = d3.select("#d3-pie-bar").append('svg')
         .attr('width', width)
         .attr('height', height)
         .append('g')
@@ -78,6 +88,19 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
             .attr('d', arc)
             .style('fill', function (d) {
               return color(d.data.label);
+            })
+            .on('mouseover', function (d) {
+              tooltip.transition()
+                .duration(200)
+                .style('opacity', 0.9);
+              tooltip.html('Label:<strong>'+ d.data.label + '</strong><br/>Count:(' + formatCount(d.data.value) + ')' + '<br/>')
+                .style('left', (d3.event.pageX + 5) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px');
+            })
+            .on('mouseout', function (d) {
+              tooltip.transition()
+                .duration(500)
+                .style('opacity', 0);
             });
 
 
@@ -97,14 +120,13 @@ angular.module('d3Components').directive('pieBar', function ($window, $timeout) 
               return color(d.label);
             });
 
-
           legend.append('text')
             .attr('x', width / 2.3 - 24)
             .attr('y', 9)
             .attr('dy', '.35em')
             .style('text-anchor', 'end')
             .text(function (d) {
-              return d.label;
+              return d.label + ' (' + formatCount(d.value) + ')';
             });
 
 
