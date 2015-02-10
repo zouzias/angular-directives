@@ -13,6 +13,7 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
       label: '@',
       onClick: '&'
     },
+    templateUrl: 'scripts/directives/histogram/HistogramChart.html',
     link: function (scope, ele, attrs) {
       var renderTimeout;
 
@@ -21,11 +22,7 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
         height = 500 - margin.top - margin.bottom;
 
 
-      var svg = d3.select(ele[0]).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var svg = d3.select("#d3-histogram").append("svg");
 
       $window.onresize = function () {
         scope.$apply();
@@ -56,6 +53,16 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
         }
 
         renderTimeout = $timeout(function () {
+
+
+          // Get parent elmenets width and subtract fixed width
+          width = angular.element($window)[0].innerWidth * ( 8 / 12) - margin.left - margin.right;
+
+          svg.attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
 
           // Formatters for counts and times (converting numbers to Dates).
           var formatCount = d3.format(",.0f");
