@@ -3,6 +3,10 @@
   shape-rendering: crispEdges;
 }
 
+.histogram-bar rect:hover{
+  opacity: 0.9;
+}
+
 .histogram-bar text {
   fill: #fff;
 }

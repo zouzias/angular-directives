@@ -13,7 +13,7 @@ angular.module('d3Components').directive('histogram', function ($window, $timeou
       label: '@',
       onClick: '&'
     },
-    templateUrl: 'scripts/directives/histogram/HistogramChart.html',
+    templateUrl: 'views/d3-histogram.html',
     link: function (scope, ele, attrs) {
       var renderTimeout;
 
